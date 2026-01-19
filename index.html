@@ -193,13 +193,22 @@
       font-weight: 700;
       letter-spacing: -0.04em;
       line-height: 1.1;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.5rem;
       opacity: 0;
       animation: fadeUp 0.6s ease 0.3s forwards;
     }
 
     .hero-name .accent {
       color: var(--accent);
+    }
+
+    .hero-aka {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--text-tertiary);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.35s forwards;
     }
 
     .hero-title {
@@ -370,6 +379,16 @@
       color: var(--accent);
     }
 
+    .skill-tag.highlight {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(96, 165, 250, 0.1));
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    [data-theme="dark"] .skill-tag.highlight {
+      background: linear-gradient(135deg, rgba(96, 165, 250, 0.15), rgba(147, 197, 253, 0.1));
+    }
+
     /* Projects */
     .projects-grid {
       display: grid;
@@ -388,6 +407,33 @@
       border-color: var(--accent);
       transform: translateY(-4px);
       box-shadow: var(--shadow-hover);
+    }
+
+    .project-card.featured {
+      border: 2px solid var(--accent);
+      background: linear-gradient(135deg, var(--card-bg), rgba(37, 99, 235, 0.03));
+    }
+
+    [data-theme="dark"] .project-card.featured {
+      background: linear-gradient(135deg, var(--card-bg), rgba(96, 165, 250, 0.05));
+    }
+
+    .project-badge {
+      display: inline-block;
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      background: rgba(37, 99, 235, 0.1);
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      margin-bottom: 0.75rem;
+    }
+
+    [data-theme="dark"] .project-badge {
+      background: rgba(96, 165, 250, 0.15);
     }
 
     .project-title {
@@ -427,6 +473,14 @@
       padding: 0.25rem 0.6rem;
       border-radius: 4px;
       color: var(--text-tertiary);
+    }
+
+    .project-tech span a {
+      color: inherit;
+    }
+
+    .project-tech span a:hover {
+      color: var(--accent);
     }
 
     /* Contact */
@@ -542,9 +596,9 @@
   <section id="hero">
     <p class="hero-greeting" data-en="Hello, I'm" data-uk="Привіт, я">Hello, I'm</p>
     <h1 class="hero-name">Konstantin <span class="accent">Slabenko</span></h1>
-    <p class="hero-aka" style="font-family: var(--font-display); font-size: 1rem; color: var(--text-tertiary); margin-top: -1rem; margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.6s ease 0.35s forwards;">aka Konstantin Kai</p>
+    <p class="hero-aka">aka Konstantin Kai</p>
     <p class="hero-title" data-en="Senior Software Engineer & Frontend Team Lead" data-uk="Senior Software Engineer & Frontend Team Lead">Senior Software Engineer & Frontend Team Lead</p>
-    <p class="hero-description" data-en="13+ years building high-traffic B2C applications. Leading teams, architecting solutions, and contributing to open-source. Based in Odesa, Ukraine." data-uk="13+ років досвіду створення високонавантажених B2C застосунків. Керую командами, проєктую архітектуру та контриб'ючу в open-source. Одеса, Україна.">13+ years building high-traffic B2C applications. Leading teams, architecting solutions, and contributing to open-source. Based in Odesa, Ukraine.</p>
+    <p class="hero-description" data-en="13+ years building high-traffic B2C applications. Leading teams, architecting solutions, and contributing to open-source. Embracing AI-assisted development for rapid prototyping. Based in Odesa, Ukraine." data-uk="13+ років досвіду створення високонавантажених B2C застосунків. Керую командами, проєктую архітектуру та контриб'ючу в open-source. Використовую AI-assisted розробку для швидкого прототипування. Одеса, Україна.">13+ years building high-traffic B2C applications. Leading teams, architecting solutions, and contributing to open-source. Embracing AI-assisted development for rapid prototyping. Based in Odesa, Ukraine.</p>
     <div class="hero-links">
       <a href="https://github.com/KonstantinKai" target="_blank" class="hero-link">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
@@ -566,7 +620,7 @@
     <h2 class="section-title" data-en="Building the web for over a decade" data-uk="Створюю веб понад десятиліття">Building the web for over a decade</h2>
     <p data-en="Frontend Team Lead with 13+ years of experience building high-traffic B2C applications. Led engineering teams of up to 10 developers, driving architectural decisions that reduced build times by 35% and release cycles by 50%. Expert in React, TypeScript, and cross-platform development (React Native, Flutter)." data-uk="Frontend Team Lead із 13+ роками досвіду створення високонавантажених B2C застосунків. Керував командами до 10 розробників, приймав архітектурні рішення, які скоротили час збірки на 35% та цикли релізів на 50%. Експерт у React, TypeScript та крос-платформній розробці (React Native, Flutter).">Frontend Team Lead with 13+ years of experience building high-traffic B2C applications. Led engineering teams of up to 10 developers, driving architectural decisions that reduced build times by 35% and release cycles by 50%. Expert in React, TypeScript, and cross-platform development (React Native, Flutter).</p>
     <br>
-    <p data-en="Proven track record of solving complex performance challenges, including building native mobile modules that eliminated critical memory bottlenecks. Passionate about developer experience, mentoring, and contributing to open-source projects." data-uk="Маю підтверджений досвід вирішення складних проблем продуктивності, включаючи створення нативних мобільних модулів, які усунули критичні проблеми з пам'яттю. Захоплююся покращенням developer experience, менторством та контриб'юшу в open-source проєкти.">Proven track record of solving complex performance challenges, including building native mobile modules that eliminated critical memory bottlenecks. Passionate about developer experience, mentoring, and contributing to open-source projects.</p>
+    <p data-en="Proven track record of solving complex performance challenges, including building native mobile modules that eliminated critical memory bottlenecks. Passionate about developer experience, mentoring, and contributing to open-source projects. Actively leveraging AI-assisted development (vibe coding) with tools like Claude Code for rapid prototyping and accelerated delivery." data-uk="Маю підтверджений досвід вирішення складних проблем продуктивності, включаючи створення нативних мобільних модулів, які усунули критичні проблеми з пам'яттю. Захоплююся покращенням developer experience, менторством та контриб'юшу в open-source проєкти. Активно використовую AI-assisted розробку (vibe coding) з інструментами на кшталт Claude Code для швидкого прототипування та прискореної доставки.">Proven track record of solving complex performance challenges, including building native mobile modules that eliminated critical memory bottlenecks. Passionate about developer experience, mentoring, and contributing to open-source projects. Actively leveraging AI-assisted development (vibe coding) with tools like Claude Code for rapid prototyping and accelerated delivery.</p>
     <br>
     <p data-en="Recently completed a Master's degree in Software Engineering with focus on ML-based developer productivity prediction using TypeScript code analysis." data-uk="Нещодавно здобув ступінь магістра з програмної інженерії з фокусом на ML-прогнозуванні продуктивності розробників на основі аналізу TypeScript коду.">Recently completed a Master's degree in Software Engineering with focus on ML-based developer productivity prediction using TypeScript code analysis.</p>
   </section>
@@ -584,7 +638,8 @@
           <li data-en="Hired and onboarded 5 engineers through technical interviews" data-uk="Найняв та онбордив 5 інженерів через технічні інтерв'ю">Hired and onboarded 5 engineers through technical interviews</li>
           <li data-en="Reduced build times by 35% through Nx monorepo adoption" data-uk="Скоротив час збірки на 35% через впровадження Nx monorepo">Reduced build times by 35% through Nx monorepo adoption</li>
           <li data-en="Cut release cycles by 50% with CI/CD pipeline automation" data-uk="Скоротив цикли релізів на 50% через автоматизацію CI/CD">Cut release cycles by 50% with CI/CD pipeline automation</li>
-          <li data-en="Architected and launched BigWish.com — independent Next.js startup" data-uk="Спроєктував та запустив BigWish.com — незалежний стартап на Next.js">Architected and launched BigWish.com — independent Next.js startup</li>
+          <li data-en="Architected and launched BigWish.com — using AI-assisted development (vibe coding) for rapid prototyping" data-uk="Спроєктував та запустив BigWish.com — використовуючи AI-assisted розробку (vibe coding) для швидкого прототипування">Architected and launched BigWish.com — using AI-assisted development (vibe coding) for rapid prototyping</li>
+          <li data-en="Developed Frontend Developer Contract — standardized guidelines for human-AI collaboration" data-uk="Розробив Frontend Developer Contract — стандартизовані гайдлайни для співпраці людей та AI">Developed Frontend Developer Contract — standardized guidelines for human-AI collaboration</li>
         </ul>
       </div>
       <div class="timeline-item">
@@ -680,6 +735,22 @@
           <span class="skill-tag">Firebase</span>
         </div>
       </div>
+      <div class="skill-category">
+        <h3 data-en="AI-Assisted Development" data-uk="AI-Assisted розробка">AI-Assisted Development</h3>
+        <div class="skill-tags">
+          <span class="skill-tag highlight">Vibe Coding</span>
+          <span class="skill-tag highlight">Claude Code</span>
+          <span class="skill-tag highlight">Opencode</span>
+        </div>
+      </div>
+      <div class="skill-category">
+        <h3>Testing</h3>
+        <div class="skill-tags">
+          <span class="skill-tag">Vitest</span>
+          <span class="skill-tag">Jest</span>
+          <span class="skill-tag">Testing Library</span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -687,13 +758,24 @@
     <p class="section-label" data-en="Open Source & Projects" data-uk="Open Source та проєкти">Open Source & Projects</p>
     <h2 class="section-title" data-en="Things I've built" data-uk="Що я створив">Things I've built</h2>
     <div class="projects-grid">
-      <div class="project-card">
+      <div class="project-card featured">
+        <span class="project-badge" data-en="⚡ Vibe Coded" data-uk="⚡ Vibe Coded">⚡ Vibe Coded</span>
         <h3 class="project-title"><a href="https://bigwish.com" target="_blank">BigWish.com ↗</a></h3>
-        <p class="project-description" data-en="Wishlist and gifting platform. Architected from scratch as sole technical architect." data-uk="Платформа для вішлістів та подарунків. Спроєктував з нуля як єдиний технічний архітектор.">Wishlist and gifting platform. Architected from scratch as sole technical architect.</p>
+        <p class="project-description" data-en="Wishlist and gifting platform. Architected from scratch as sole technical architect, leveraging AI-assisted development with Claude Code for rapid prototyping and accelerated delivery." data-uk="Платформа для вішлістів та подарунків. Спроєктував з нуля як єдиний технічний архітектор, використовуючи AI-assisted розробку з Claude Code для швидкого прототипування та прискореної доставки.">Wishlist and gifting platform. Architected from scratch as sole technical architect, leveraging AI-assisted development with Claude Code for rapid prototyping and accelerated delivery.</p>
         <div class="project-tech">
           <span>Next.js</span>
           <span>TypeScript</span>
           <span>React</span>
+          <span>Claude Code</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <h3 class="project-title">Frontend Developer Contract</h3>
+        <p class="project-description" data-en="Standardized guidelines and conventions for consistent collaboration between human developers and AI coding agents. Improves code quality and team productivity in AI-assisted workflows." data-uk="Стандартизовані гайдлайни та конвенції для послідовної співпраці між розробниками та AI coding агентами. Покращує якість коду та продуктивність команди в AI-assisted воркфлоу.">Standardized guidelines and conventions for consistent collaboration between human developers and AI coding agents. Improves code quality and team productivity in AI-assisted workflows.</p>
+        <div class="project-tech">
+          <span>Documentation</span>
+          <span>AI Agents</span>
+          <span>Best Practices</span>
         </div>
       </div>
       <div class="project-card">
@@ -702,8 +784,8 @@
         <div class="project-tech">
           <span>Rust</span>
           <span>Proto</span>
-          <span><a href="https://github.com/KonstantinKai/proto-flutter-plugin" target="_blank" style="color: inherit;">Flutter Plugin ↗</a></span>
-          <span><a href="https://github.com/KonstantinKai/proto-dart-plugin" target="_blank" style="color: inherit;">Dart Plugin ↗</a></span>
+          <span><a href="https://github.com/KonstantinKai/proto-flutter-plugin" target="_blank">Flutter Plugin ↗</a></span>
+          <span><a href="https://github.com/KonstantinKai/proto-dart-plugin" target="_blank">Dart Plugin ↗</a></span>
         </div>
       </div>
       <div class="project-card">
