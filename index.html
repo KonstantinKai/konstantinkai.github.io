@@ -45,9 +45,22 @@
     plausible.init({ endpoint: 'https://plausible.k-kai.dev/api/event' })
   </script>
 
+  <!-- Pre-paint: resolve theme/ui/lang from localStorage + system pref to avoid FOUC -->
+  <script>
+    (function() {
+      const themePref = localStorage.getItem('theme') || 'system';
+      const dark = themePref === 'dark' || (themePref === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      const root = document.documentElement;
+      root.setAttribute('data-theme', dark ? 'dark' : 'light');
+      root.setAttribute('data-theme-pref', themePref);
+      root.setAttribute('data-ui', localStorage.getItem('ui-style') || 'neonblade');
+      root.setAttribute('data-lang', localStorage.getItem('lang') || 'en');
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&family=Tektur:wght@500;600;700;800&family=Exo+2:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #fafafa;
@@ -597,6 +610,596 @@
         display: none;
       }
     }
+
+    /* ============================================
+       NEONBLADE UI — cyberpunk override
+       Activated via [data-ui="neonblade"] on body
+       ============================================ */
+    [data-ui="neonblade"] {
+      --font-display: 'Orbitron', 'Outfit', sans-serif;
+      --font-body: 'Rajdhani', 'Outfit', sans-serif;
+      --neon-blue: #60a5fa;
+      --neon-magenta: #ff00d4;
+      --neon-blue-soft: rgba(96, 165, 250, 0.6);
+      --neon-magenta-soft: rgba(255, 0, 212, 0.6);
+      --bg: #07050d;
+      --bg-secondary: #0d0a18;
+      --text: #e8e8f0;
+      --text-secondary: #9ea0b8;
+      --text-tertiary: #5a5d7a;
+      --accent: var(--neon-blue);
+      --accent-hover: var(--neon-magenta);
+      --border: #1a1a2e;
+      --card-bg: #0d0a18;
+      --shadow: 0 0 20px rgba(96, 165, 250, 0.08);
+      --shadow-hover: 0 0 30px rgba(96, 165, 250, 0.35), 0 0 60px rgba(255, 0, 212, 0.15);
+    }
+
+    /* UK lang — Cyrillic-supporting cyberpunk fonts (Orbitron/Rajdhani lack Cyrillic) */
+    [data-ui="neonblade"][data-lang="uk"] {
+      --font-display: 'Tektur', 'Outfit', sans-serif;
+      --font-body: 'Exo 2', 'Outfit', sans-serif;
+    }
+
+    [data-ui="neonblade"][data-theme="light"] {
+      --bg: #f5f3ff;
+      --bg-secondary: #ebe7f7;
+      --text: #0a0612;
+      --text-secondary: #4a4760;
+      --text-tertiary: #8a87a0;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --border: #d4d0e8;
+      --card-bg: #ffffff;
+      --neon-blue: #2563eb;
+      --neon-magenta: #c8009f;
+      --neon-blue-soft: rgba(37, 99, 235, 0.4);
+      --neon-magenta-soft: rgba(200, 0, 159, 0.4);
+      --shadow: 0 0 12px rgba(37, 99, 235, 0.1);
+      --shadow-hover: 0 0 20px rgba(37, 99, 235, 0.25), 0 0 40px rgba(200, 0, 159, 0.1);
+    }
+
+    /* Hex canvas bg — JS-driven, canvas element prepended to body */
+    [data-ui="neonblade"] body {
+      isolation: isolate;
+    }
+
+    #nb-hex-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+      display: none;
+    }
+
+    [data-ui="neonblade"] #nb-hex-canvas {
+      display: block;
+    }
+
+    /* Vignette over canvas — darken edges, focus center */
+    [data-ui="neonblade"] body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background: radial-gradient(ellipse at center, transparent 35%, var(--bg) 95%);
+    }
+
+    /* Body uses Rajdhani; bump font-size for body legibility (Rajdhani x-height smaller) */
+    [data-ui="neonblade"] body {
+      font-family: var(--font-body);
+      font-size: 18px;
+      letter-spacing: 0.01em;
+    }
+
+    /* All display elements use Orbitron */
+    [data-ui="neonblade"] .nav-logo,
+    [data-ui="neonblade"] .hero-name,
+    [data-ui="neonblade"] .hero-aka,
+    [data-ui="neonblade"] .hero-title,
+    [data-ui="neonblade"] .section-title,
+    [data-ui="neonblade"] .timeline-title,
+    [data-ui="neonblade"] .project-title,
+    [data-ui="neonblade"] .skill-category h3 {
+      font-family: var(--font-display);
+    }
+
+    [data-ui="neonblade"] .hero-name {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    [data-ui="neonblade"] .section-title {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    /* Kill rounded corners — neonblade is sharp */
+    [data-ui="neonblade"] .nav-toggle,
+    [data-ui="neonblade"] .skill-tag,
+    [data-ui="neonblade"] .hero-link,
+    [data-ui="neonblade"] .contact-link {
+      border-radius: 0;
+    }
+
+    /* Nav — sharp, monospace-ish toggles, neon scroll glow */
+    [data-ui="neonblade"] nav.scrolled {
+      border-bottom: 1px solid var(--neon-blue-soft);
+      box-shadow: 0 0 24px rgba(96, 165, 250, 0.18);
+      backdrop-filter: blur(12px);
+    }
+
+    [data-ui="neonblade"] .nav-logo {
+      letter-spacing: 0.3em;
+      text-shadow: 0 0 8px var(--neon-blue-soft);
+    }
+
+    [data-ui="neonblade"] .nav-toggle {
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      clip-path: polygon(8% 0, 100% 0, 100% 70%, 92% 100%, 0 100%, 0 30%);
+      transition: all 0.2s ease;
+    }
+
+    /* Pause flicker on hover so users can read steadily */
+    [data-ui="neonblade"] .hero-link:hover,
+    [data-ui="neonblade"] .contact-link:hover {
+      animation-play-state: paused;
+    }
+
+    /* Neon-sign flicker — irregular dimming + glow drop */
+    @keyframes nb-flicker {
+      0%, 17%, 19%, 23%, 27%, 65%, 67%, 100% {
+        opacity: 1;
+        text-shadow: 0 0 4px currentColor, 0 0 8px var(--neon-blue-soft);
+        border-color: var(--neon-blue-soft);
+      }
+      18%, 25%, 66% {
+        opacity: 0.45;
+        text-shadow: none;
+        border-color: var(--border);
+      }
+      20% {
+        opacity: 0.7;
+        text-shadow: 0 0 2px currentColor;
+        border-color: var(--border);
+      }
+    }
+
+    [data-ui="neonblade"] .nav-toggle:hover {
+      color: var(--neon-blue);
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 16px var(--neon-blue-soft), inset 0 0 8px rgba(96, 165, 250, 0.1);
+    }
+
+    /* Hero — angular accent, subtle glitch on name */
+    [data-ui="neonblade"] .hero-greeting {
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--neon-blue);
+    }
+
+    [data-ui="neonblade"] .hero-name {
+      position: relative;
+      animation: fadeUp 0.6s ease 0.3s forwards, nb-glitch 2.4s steps(1) 1s infinite;
+    }
+
+    [data-ui="neonblade"] .hero-name .accent {
+      color: var(--neon-magenta);
+      text-shadow: 0 0 12px var(--neon-magenta-soft), 0 0 24px rgba(255, 0, 212, 0.25);
+    }
+
+    @keyframes nb-glitch {
+      0%, 100% {
+        text-shadow: 0 0 0 transparent;
+        transform: translate(0, 0);
+        clip-path: none;
+      }
+      4% {
+        text-shadow: -3px 0 var(--neon-blue), 3px 0 var(--neon-magenta);
+        transform: translate(-2px, 1px);
+      }
+      6% {
+        text-shadow: 3px 0 var(--neon-blue), -3px 0 var(--neon-magenta);
+        transform: translate(2px, -1px);
+        clip-path: inset(20% 0 35% 0);
+      }
+      8% {
+        text-shadow: -4px 1px var(--neon-magenta), 4px -1px var(--neon-blue);
+        transform: translate(-1px, 2px);
+        clip-path: inset(50% 0 10% 0);
+      }
+      10%, 18% {
+        text-shadow: 0 0 0 transparent;
+        transform: translate(0, 0);
+        clip-path: none;
+      }
+      20% {
+        text-shadow: -5px 0 var(--neon-magenta), 5px 0 var(--neon-blue), 0 0 8px var(--neon-blue-soft);
+        transform: translate(3px, 0) skewX(-2deg);
+        clip-path: inset(70% 0 5% 0);
+      }
+      22% {
+        text-shadow: 5px 0 var(--neon-magenta), -5px 0 var(--neon-blue);
+        transform: translate(-3px, 0) skewX(2deg);
+        clip-path: inset(10% 0 75% 0);
+      }
+      24%, 60% {
+        text-shadow: 0 0 0 transparent;
+        transform: translate(0, 0);
+        clip-path: none;
+      }
+      62% {
+        text-shadow: -2px 0 var(--neon-blue), 2px 0 var(--neon-magenta);
+        transform: translate(1px, -1px);
+      }
+      64% {
+        text-shadow: 4px 1px var(--neon-magenta), -4px -1px var(--neon-blue);
+        transform: translate(-2px, 1px) skewX(1deg);
+        clip-path: inset(40% 0 40% 0);
+      }
+      66%, 100% {
+        text-shadow: 0 0 0 transparent;
+        transform: translate(0, 0);
+        clip-path: none;
+      }
+    }
+
+    [data-ui="neonblade"] .hero-aka {
+      color: var(--neon-blue);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+    }
+
+    /* Hero links — NeonBlade button: gradient border + corner cut + sweep light on hover */
+    [data-ui="neonblade"] .hero-link {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+      background:
+        linear-gradient(var(--bg-secondary), var(--bg-secondary)) padding-box,
+        linear-gradient(135deg, var(--neon-blue), var(--neon-magenta)) border-box;
+      border: 1.5px solid transparent;
+      border-radius: 0;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      color: var(--neon-blue);
+      padding: 0.7rem 1.3rem;
+      transition: color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+      animation: nb-flicker 6.5s infinite;
+    }
+
+    [data-ui="neonblade"] .hero-link::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 35%, rgba(96, 165, 250, 0.45) 50%, transparent 65%);
+      transform: translateX(-150%);
+      transition: transform 0.6s ease;
+      pointer-events: none;
+    }
+
+    [data-ui="neonblade"] .hero-link:nth-child(2) { animation-delay: 0.8s; animation-duration: 7.2s; }
+    [data-ui="neonblade"] .hero-link:nth-child(3) { animation-delay: 1.6s; animation-duration: 5.4s; }
+    [data-ui="neonblade"] .hero-link:nth-child(4) { animation-delay: 2.4s; animation-duration: 8.1s; }
+
+    [data-ui="neonblade"] .hero-link:hover {
+      color: var(--neon-magenta);
+      box-shadow: 0 0 24px var(--neon-blue-soft), 0 0 48px rgba(255, 0, 212, 0.2);
+      transform: translateY(-2px);
+    }
+
+    [data-ui="neonblade"] .hero-link:hover::after {
+      transform: translateX(150%);
+    }
+
+    [data-ui="neonblade"] .hero-link svg {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Section labels — uppercase, neon, subtle glitch */
+    [data-ui="neonblade"] .section-label {
+      color: var(--neon-magenta);
+      letter-spacing: 0.25em;
+      animation: fadeUp 0.6s ease forwards, nb-glitch-sm 2.2s steps(1) 0.8s infinite;
+    }
+
+    [data-ui="neonblade"] .section-label::before {
+      content: '// ';
+      color: var(--neon-blue);
+    }
+
+    @keyframes nb-glitch-sm {
+      0%, 100% {
+        text-shadow: 0 0 0 transparent;
+        transform: translate(0, 0);
+      }
+      6% {
+        text-shadow: -3px 0 var(--neon-blue), 3px 0 var(--neon-magenta);
+        transform: translate(-2px, 0);
+      }
+      8% {
+        text-shadow: 3px 0 var(--neon-blue), -3px 0 var(--neon-magenta);
+        transform: translate(2px, 0) skewX(-2deg);
+      }
+      10%, 30% {
+        text-shadow: 0 0 0 transparent;
+        transform: translate(0, 0);
+      }
+      32% {
+        text-shadow: -4px 0 var(--neon-magenta), 4px 0 var(--neon-blue);
+        transform: translate(-2px, 1px);
+      }
+      34% {
+        text-shadow: 0 0 0 transparent;
+        transform: translate(0, 0);
+      }
+      66% {
+        text-shadow: 2px 0 var(--neon-blue), -2px 0 var(--neon-magenta);
+        transform: translate(1px, 0) skewX(1deg);
+      }
+      68% {
+        text-shadow: 0 0 0 transparent;
+        transform: translate(0, 0);
+      }
+    }
+
+    /* Timeline — neon line + glow markers */
+    [data-ui="neonblade"] .timeline::before {
+      background: linear-gradient(180deg, var(--neon-blue), var(--neon-magenta));
+      box-shadow: 0 0 8px var(--neon-blue-soft);
+    }
+
+    [data-ui="neonblade"] .timeline-item::before {
+      background: var(--neon-blue);
+      box-shadow: 0 0 12px var(--neon-blue), 0 0 24px var(--neon-blue-soft);
+      border-radius: 0;
+      transform: rotate(45deg);
+    }
+
+    [data-ui="neonblade"] .timeline-period {
+      color: var(--neon-blue);
+      letter-spacing: 0.15em;
+      font-family: var(--font-display);
+    }
+
+    [data-ui="neonblade"] .timeline-company {
+      color: var(--neon-magenta);
+    }
+
+    /* Skill tags — parallelogram clip 15° */
+    /* Skill tags — NeonBlade badge: corner-cut ghost + pulsing neon dot */
+    [data-ui="neonblade"] .skill-tag {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+      background: rgba(96, 165, 250, 0.06);
+      border: 1px solid var(--neon-blue-soft);
+      border-radius: 0;
+      padding: 0.4rem 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      color: var(--neon-blue);
+      transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    [data-ui="neonblade"] .skill-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--neon-blue);
+      border-radius: 50%;
+      box-shadow: 0 0 4px var(--neon-blue), 0 0 10px var(--neon-blue-soft);
+      animation: nb-pulse 2.4s ease infinite;
+      flex-shrink: 0;
+      transition: background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    [data-ui="neonblade"] .skill-tag:hover {
+      color: var(--neon-magenta);
+      background: rgba(255, 0, 212, 0.07);
+      border-color: var(--neon-magenta-soft);
+      box-shadow: 0 0 14px var(--neon-magenta-soft);
+      transform: translateY(-1px);
+    }
+
+    [data-ui="neonblade"] .skill-tag:hover::before {
+      background: var(--neon-magenta);
+      box-shadow: 0 0 4px var(--neon-magenta), 0 0 10px var(--neon-magenta-soft);
+    }
+
+    @keyframes nb-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.8); }
+    }
+
+    [data-ui="neonblade"] .skill-category h3 {
+      color: var(--neon-magenta);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    /* Project cards — border-beam: rotating conic gradient border + 15px corner cuts */
+    @property --beam-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    [data-ui="neonblade"] .project-card {
+      position: relative;
+      background:
+        linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+        linear-gradient(135deg, var(--neon-blue), var(--neon-magenta)) border-box;
+      border: 1.5px solid transparent;
+      border-radius: 0;
+      clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    [data-ui="neonblade"] .project-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 30px var(--neon-blue-soft), 0 0 60px rgba(255, 0, 212, 0.18);
+      background:
+        linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+        conic-gradient(from var(--beam-angle),
+          transparent 0deg,
+          transparent 200deg,
+          var(--neon-blue) 270deg,
+          var(--neon-magenta) 340deg,
+          transparent 360deg
+        ) border-box;
+      animation: nb-beam 3s linear infinite;
+    }
+
+    @keyframes nb-beam {
+      to { --beam-angle: 360deg; }
+    }
+
+    /* Fallback ∀ browsers w/o @property — static gradient border still shows */
+    @supports not (background: paint(angle)) {
+      [data-ui="neonblade"] .project-card {
+        animation: none;
+        background:
+          linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+          linear-gradient(135deg, var(--neon-blue), var(--neon-magenta)) border-box;
+      }
+    }
+
+    [data-ui="neonblade"] .project-title a {
+      color: var(--neon-blue);
+      text-shadow: 0 0 6px rgba(96, 165, 250, 0.3);
+    }
+
+    [data-ui="neonblade"] .project-title a:hover {
+      color: var(--neon-magenta);
+      text-shadow: 0 0 8px var(--neon-magenta-soft);
+    }
+
+    [data-ui="neonblade"] .project-tech span {
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      border: 1px solid var(--border);
+      clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+    }
+
+    [data-ui="neonblade"] .project-tech span a {
+      color: var(--neon-blue);
+    }
+
+    [data-ui="neonblade"] .project-tech span a:hover {
+      color: var(--neon-magenta);
+    }
+
+    /* Contact links */
+    /* Contact links — same pattern as hero-link */
+    [data-ui="neonblade"] .contact-link {
+      position: relative;
+      overflow: hidden;
+      clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+      background:
+        linear-gradient(var(--bg-secondary), var(--bg-secondary)) padding-box,
+        linear-gradient(135deg, var(--neon-blue), var(--neon-magenta)) border-box;
+      border: 1.5px solid transparent;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      color: var(--neon-blue);
+      padding: 0.8rem 1.4rem;
+      transition: color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+      animation: nb-flicker 7.4s infinite;
+    }
+
+    [data-ui="neonblade"] .contact-link::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 35%, rgba(96, 165, 250, 0.45) 50%, transparent 65%);
+      transform: translateX(-150%);
+      transition: transform 0.6s ease;
+      pointer-events: none;
+    }
+
+    [data-ui="neonblade"] .contact-link:nth-child(2) { animation-delay: 1.1s; animation-duration: 6.2s; }
+    [data-ui="neonblade"] .contact-link:nth-child(3) { animation-delay: 2.3s; animation-duration: 8.6s; }
+    [data-ui="neonblade"] .contact-link:nth-child(4) { animation-delay: 3.5s; animation-duration: 5.9s; }
+
+    [data-ui="neonblade"] .contact-link:hover {
+      color: var(--neon-magenta);
+      box-shadow: 0 0 20px var(--neon-blue-soft), 0 0 40px rgba(255, 0, 212, 0.18);
+      transform: translateY(-2px);
+    }
+
+    [data-ui="neonblade"] .contact-link:hover::after {
+      transform: translateX(150%);
+    }
+
+    [data-ui="neonblade"] .contact-link svg {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Section titles — slight letterspacing tweak */
+    [data-ui="neonblade"] .section-title {
+      letter-spacing: -0.02em;
+    }
+
+    /* a11y — focus rings */
+    [data-ui="neonblade"] *:focus-visible {
+      outline: 2px solid var(--neon-blue);
+      outline-offset: 3px;
+      box-shadow: 0 0 12px var(--neon-blue-soft);
+    }
+
+    /* Selection */
+    [data-ui="neonblade"] ::selection {
+      background: var(--neon-magenta);
+      color: var(--bg);
+    }
+
+    /* Footer accent */
+    [data-ui="neonblade"] footer {
+      border-top: 1px solid var(--border);
+      background: linear-gradient(180deg, transparent, rgba(96, 165, 250, 0.03));
+    }
+
+    /* NeonBlade credit — neonblade-only */
+    .footer-nb-credit {
+      display: none;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--text-tertiary);
+    }
+
+    [data-ui="neonblade"] .footer-nb-credit {
+      display: block;
+      text-transform: uppercase;
+    }
+
+    [data-ui="neonblade"] .footer-nb-credit a {
+      color: var(--neon-blue);
+      text-shadow: 0 0 4px var(--neon-blue-soft);
+    }
+
+    [data-ui="neonblade"] .footer-nb-credit a:hover {
+      color: var(--neon-magenta);
+      text-shadow: 0 0 4px var(--neon-magenta-soft);
+    }
   </style>
 
   <!-- Structured Data -->
@@ -631,13 +1234,19 @@
   }
   </script>
 </head>
-<body data-theme="light" data-lang="en">
+<body data-theme="light" data-lang="en" data-ui="neonblade">
   <nav id="nav">
     <a href="#hero" class="nav-logo">KS</a>
     <div class="nav-controls">
+      <button class="nav-toggle" id="uiToggle">CLASSIC</button>
       <button class="nav-toggle" id="langToggle">UK</button>
-      <button class="nav-toggle" id="themeToggle">
-        <svg id="sunIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button class="nav-toggle" id="themeToggle" title="Theme: system / light / dark">
+        <svg id="systemIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+        <svg id="sunIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
           <circle cx="12" cy="12" r="5"></circle>
           <line x1="12" y1="1" x2="12" y2="3"></line>
           <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -949,48 +1558,62 @@
 
   <footer>
     <p data-en="© 2025 Kostyantin Slabenko. Built with passion." data-uk="© 2025 Костянтин Слабенко. Створено з любов'ю.">© 2025 Kostyantin Slabenko. Built with passion.</p>
+    <p class="footer-nb-credit">Inspired by <a href="https://neonbladeui.neuronrush.com/" target="_blank" rel="noopener">NeonBlade UI</a></p>
   </footer>
 
   <script>
-    // Theme toggle
+    // Theme toggle (3-state: system → light → dark)
     const themeToggle = document.getElementById('themeToggle');
-    const sunIcon = document.getElementById('sunIcon');
-    const moonIcon = document.getElementById('moonIcon');
-    
-    function setTheme(theme) {
-      document.body.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
-      if (theme === 'dark') {
-        sunIcon.style.display = 'none';
-        moonIcon.style.display = 'block';
-      } else {
-        sunIcon.style.display = 'block';
-        moonIcon.style.display = 'none';
-      }
+    const themeIcons = {
+      system: document.getElementById('systemIcon'),
+      light: document.getElementById('sunIcon'),
+      dark: document.getElementById('moonIcon'),
+    };
+    const themeOrder = ['system', 'light', 'dark'];
+    const darkMq = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function resolveTheme(pref) {
+      return pref === 'system' ? (darkMq.matches ? 'dark' : 'light') : pref;
     }
-    
+
+    function setTheme(pref) {
+      const resolved = resolveTheme(pref);
+      document.body.setAttribute('data-theme', resolved);
+      document.body.setAttribute('data-theme-pref', pref);
+      document.documentElement.setAttribute('data-theme', resolved);
+      document.documentElement.setAttribute('data-theme-pref', pref);
+      localStorage.setItem('theme', pref);
+      Object.entries(themeIcons).forEach(([k, el]) => {
+        el.style.display = k === pref ? 'block' : 'none';
+      });
+    }
+
     themeToggle.addEventListener('click', () => {
-      const current = document.body.getAttribute('data-theme');
-      setTheme(current === 'light' ? 'dark' : 'light');
+      const cur = localStorage.getItem('theme') || 'system';
+      const next = themeOrder[(themeOrder.indexOf(cur) + 1) % themeOrder.length];
+      setTheme(next);
     });
-    
-    // Check for saved theme or system preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
-    }
+
+    // Init: saved pref OR default 'system'
+    setTheme(localStorage.getItem('theme') || 'system');
+
+    // Live system change ∀ pref=system
+    darkMq.addEventListener('change', () => {
+      if ((localStorage.getItem('theme') || 'system') === 'system') {
+        setTheme('system');
+      }
+    });
 
     // Language toggle
     const langToggle = document.getElementById('langToggle');
     
     function setLang(lang) {
       document.body.setAttribute('data-lang', lang);
+      document.documentElement.setAttribute('data-lang', lang);
       localStorage.setItem('lang', lang);
       langToggle.textContent = lang === 'en' ? 'UK' : 'EN';
       document.documentElement.lang = lang;
-      
+
       document.querySelectorAll('[data-en][data-uk]').forEach(el => {
         el.textContent = el.getAttribute(`data-${lang}`);
       });
@@ -1005,6 +1628,26 @@
     const savedLang = localStorage.getItem('lang');
     if (savedLang) {
       setLang(savedLang);
+    }
+
+    // UI style toggle (classic / neonblade)
+    const uiToggle = document.getElementById('uiToggle');
+
+    function setUiStyle(style) {
+      document.body.setAttribute('data-ui', style);
+      document.documentElement.setAttribute('data-ui', style);
+      localStorage.setItem('ui-style', style);
+      uiToggle.textContent = style === 'classic' ? 'NEO' : 'CLASSIC';
+    }
+
+    uiToggle.addEventListener('click', () => {
+      const current = document.body.getAttribute('data-ui');
+      setUiStyle(current === 'classic' ? 'neonblade' : 'classic');
+    });
+
+    const savedUi = localStorage.getItem('ui-style');
+    if (savedUi) {
+      setUiStyle(savedUi);
     }
 
     // Nav scroll effect
@@ -1038,6 +1681,270 @@
       el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
       observer.observe(el);
     });
+
+    // ─── NeonBlade hex canvas (port of NeonBlade UI Hexagons) ───
+    (function() {
+      let canvas = null, ctx = null, animFrame = null, ro = null;
+      let cells = [], graph = { verts: [], edges: [], vertToEdges: [] }, beams = [];
+      const config = {
+        hexSize: 52,
+        borderWidth: 1,
+        hexBorderColor: 'rgba(96,165,250,0.22)',
+        beamColor: '#60a5fa',
+        beamGlowColor: '#60a5fa',
+        beamSpeed: 1.6,
+        beamLength: 90,
+        beamSpawnProbability: 0.06,
+        maxBeams: 12,
+        borderGlowEffect: false,
+        borderGlowColor: '#60a5fa',
+        borderGlowRadius: 6,
+      };
+
+      function flatTopVerts(cx, cy, r) {
+        const out = [];
+        for (let i = 0; i < 6; i++) {
+          const a = (Math.PI / 180) * (60 * i);
+          out.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+        }
+        return out;
+      }
+
+      function buildGrid(width, height, r) {
+        const h = Math.sqrt(3) * r;
+        const horizSpacing = r * 1.5, vertSpacing = h;
+        const cols = Math.ceil(width / horizSpacing) + 3;
+        const rows = Math.ceil(height / vertSpacing) + 3;
+        const cs = [], vMap = new Map(), gV = [];
+        const vKey = (x, y) => `${Math.round(x*10)},${Math.round(y*10)}`;
+        const getV = (x, y) => {
+          const k = vKey(x, y);
+          if (!vMap.has(k)) { vMap.set(k, gV.length); gV.push({ x, y }); }
+          return vMap.get(k);
+        };
+        for (let col = -1; col < cols; col++) {
+          for (let row = -1; row < rows; row++) {
+            const cx = col * horizSpacing + r;
+            const cy = row * vertSpacing + (col % 2 !== 0 ? vertSpacing/2 : 0) + h/2;
+            const verts = flatTopVerts(cx, cy, r);
+            cs.push({ cx, cy, verts });
+            verts.forEach(([x, y]) => getV(x, y));
+          }
+        }
+        const eMap = new Map(), gE = [], vte = new Map();
+        for (const cell of cs) {
+          const vIdxs = cell.verts.map(([x, y]) => vMap.get(vKey(x, y)));
+          for (let i = 0; i < 6; i++) {
+            const vi = vIdxs[i], vj = vIdxs[(i+1)%6];
+            const k = vi < vj ? `${vi}-${vj}` : `${vj}-${vi}`;
+            if (eMap.has(k)) continue;
+            const [x1, y1] = cell.verts[i];
+            const [x2, y2] = cell.verts[(i+1)%6];
+            const len = Math.hypot(x2-x1, y2-y1);
+            const eIdx = gE.length;
+            gE.push({ x1, y1, x2, y2, v1: vi, v2: vj, dx: (x2-x1)/len, dy: (y2-y1)/len, length: len });
+            eMap.set(k, eIdx);
+            if (!vte.has(vi)) vte.set(vi, new Set());
+            if (!vte.has(vj)) vte.set(vj, new Set());
+            vte.get(vi).add(eIdx); vte.get(vj).add(eIdx);
+          }
+        }
+        const vertToEdges = gV.map((_, i) => [...(vte.get(i) || [])]);
+        return { cells: cs, graph: { verts: gV, edges: gE, vertToEdges } };
+      }
+
+      function beamHead(b, edges) {
+        const e = edges[b.edgeIdx];
+        return b.forward ? [e.x1+e.dx*b.t, e.y1+e.dy*b.t] : [e.x2-e.dx*b.t, e.y2-e.dy*b.t];
+      }
+
+      function spawnBeam(g, hexSize, speed, tail) {
+        const { verts, edges, vertToEdges } = g;
+        const top = [];
+        verts.forEach((v, i) => { if (v.y < hexSize*2.5) top.push(i); });
+        if (!top.length) return null;
+        for (let i = top.length-1; i > 0; i--) {
+          const j = Math.floor(Math.random()*(i+1));
+          [top[i], top[j]] = [top[j], top[i]];
+        }
+        for (const vIdx of top) {
+          const down = (vertToEdges[vIdx] || []).filter(eIdx => {
+            const e = edges[eIdx];
+            const edy = e.v1 === vIdx ? e.dy : -e.dy;
+            return edy > 0.1;
+          });
+          if (!down.length) continue;
+          const eIdx = down[Math.floor(Math.random()*down.length)];
+          const forward = edges[eIdx].v1 === vIdx;
+          return {
+            edgeIdx: eIdx, forward, t: 0,
+            speed: speed*(0.75+Math.random()*0.5),
+            tailPx: tail*(0.7+Math.random()*0.6),
+            trailLen: 0, trail: []
+          };
+        }
+        return null;
+      }
+
+      function stepBeam(b, g, H) {
+        const { verts, edges, vertToEdges } = g;
+        const e = edges[b.edgeIdx];
+        const h = beamHead(b, edges);
+        if (b.trail.length > 0) {
+          const last = b.trail[b.trail.length-1];
+          b.trailLen += Math.hypot(h[0]-last[0], h[1]-last[1]);
+        }
+        b.trail.push(h);
+        while (b.trailLen > b.tailPx && b.trail.length > 2) {
+          const a = b.trail[0], bb = b.trail[1];
+          b.trailLen -= Math.hypot(bb[0]-a[0], bb[1]-a[1]);
+          b.trail.shift();
+        }
+        b.t += b.speed;
+        if (b.t < e.length) return true;
+        const overflow = b.t - e.length;
+        const arrV = b.forward ? e.v2 : e.v1;
+        if (verts[arrV].y > H*1.1) return false;
+        const cands = (vertToEdges[arrV] || [])
+          .filter(ei => ei !== b.edgeIdx)
+          .map(ei => {
+            const ce = edges[ei]; const fwd = ce.v1 === arrV;
+            const edy = fwd ? ce.dy : -ce.dy;
+            return { ei, fwd, edy };
+          })
+          .filter(c => c.edy >= -0.01);
+        if (!cands.length) return false;
+        const downward = cands.filter(c => c.edy > 0.1);
+        const horizontal = cands.filter(c => Math.abs(c.edy) <= 0.1);
+        const lateral = [...downward, ...horizontal];
+        let pool;
+        if (!lateral.length) pool = cands;
+        else if (downward.length && horizontal.length) pool = Math.random() < 0.55 ? horizontal : downward;
+        else pool = lateral;
+        const chosen = pool[Math.floor(Math.random()*pool.length)];
+        b.edgeIdx = chosen.ei; b.forward = chosen.fwd; b.t = overflow;
+        return true;
+      }
+
+      function hexToRgba(hex, alpha) {
+        if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+          let c = hex.substring(1).split('');
+          if (c.length === 3) c = [c[0],c[0],c[1],c[1],c[2],c[2]];
+          const n = parseInt('0x'+c.join(''), 16);
+          return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${alpha})`;
+        }
+        if (hex.startsWith('rgb')) return hex.replace(/^rgb\(/,'rgba(').replace(/\)$/, `,${alpha})`);
+        return hex;
+      }
+
+      function rebuild() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const { cells: c, graph: g } = buildGrid(canvas.width, canvas.height, config.hexSize);
+        cells = c; graph = g; beams = [];
+      }
+
+      function render() {
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+        // single-path stroke for all hexes (massive perf win vs N stroke calls)
+        ctx.beginPath();
+        for (const cell of cells) {
+          const v = cell.verts;
+          ctx.moveTo(v[0][0], v[0][1]);
+          for (let i = 1; i < 6; i++) ctx.lineTo(v[i][0], v[i][1]);
+          ctx.closePath();
+        }
+        ctx.strokeStyle = config.hexBorderColor;
+        ctx.lineWidth = config.borderWidth;
+        ctx.stroke();
+        if (graph.edges.length) {
+          if (Math.random() < config.beamSpawnProbability && beams.length < config.maxBeams) {
+            const nb = spawnBeam(graph, config.hexSize, config.beamSpeed, config.beamLength);
+            if (nb) beams.push(nb);
+          }
+          const surviving = [];
+          for (const b of beams) {
+            const alive = stepBeam(b, graph, H);
+            if (!alive) continue;
+            if (b.trail.length >= 2) {
+              const tail = b.trail[0], head = b.trail[b.trail.length-1];
+              const grad = ctx.createLinearGradient(tail[0], tail[1], head[0], head[1]);
+              grad.addColorStop(0, hexToRgba(config.beamColor, 0));
+              grad.addColorStop(0.55, hexToRgba(config.beamColor, 0.28));
+              grad.addColorStop(1, hexToRgba(config.beamColor, 0.92));
+              ctx.beginPath();
+              ctx.moveTo(b.trail[0][0], b.trail[0][1]);
+              for (let j = 1; j < b.trail.length; j++) ctx.lineTo(b.trail[j][0], b.trail[j][1]);
+              ctx.strokeStyle = grad;
+              ctx.lineWidth = config.borderWidth + 0.8;
+              ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+              ctx.shadowBlur = 0;
+              ctx.stroke();
+              const prev = b.trail[b.trail.length-2];
+              ctx.beginPath();
+              ctx.moveTo(prev[0], prev[1]);
+              ctx.lineTo(head[0], head[1]);
+              ctx.strokeStyle = hexToRgba(config.beamColor, 0.95);
+              ctx.lineWidth = config.borderWidth + 2.5;
+              ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
+              ctx.shadowColor = config.beamGlowColor;
+              ctx.shadowBlur = 10;
+              ctx.stroke();
+              ctx.shadowBlur = 0;
+            }
+            surviving.push(b);
+          }
+          beams = surviving;
+        }
+        animFrame = requestAnimationFrame(render);
+      }
+
+      function applyTheme() {
+        const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        if (dark) {
+          config.hexBorderColor = 'rgba(96,165,250,0.22)';
+          config.beamColor = '#60a5fa';
+        } else {
+          config.hexBorderColor = 'rgba(37,99,235,0.22)';
+          config.beamColor = '#2563eb';
+        }
+        config.beamGlowColor = config.beamColor;
+        config.borderGlowColor = config.beamColor;
+      }
+
+      function start() {
+        if (animFrame) return;
+        if (!canvas) {
+          canvas = document.createElement('canvas');
+          canvas.id = 'nb-hex-canvas';
+          document.body.prepend(canvas);
+          ctx = canvas.getContext('2d');
+          window.addEventListener('resize', rebuild);
+        }
+        applyTheme();
+        rebuild();
+        render();
+      }
+
+      function stop() {
+        if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+      }
+
+      function sync() {
+        const ui = document.documentElement.getAttribute('data-ui') || document.body.getAttribute('data-ui');
+        if (ui === 'neonblade') {
+          if (!animFrame) start();
+          else applyTheme();
+        } else {
+          stop();
+        }
+      }
+
+      sync();
+      new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['data-ui', 'data-theme'] });
+      new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['data-ui', 'data-theme'] });
+    })();
   </script>
 </body>
 </html>
