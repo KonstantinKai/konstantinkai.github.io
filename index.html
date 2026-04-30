@@ -1002,12 +1002,10 @@
       height: 6px;
       background: var(--neon-blue);
       border-radius: 50%;
-      box-shadow: 0 0 4px var(--neon-blue), 0 0 10px var(--neon-blue-soft);
       animation: nb-pulse 2.4s ease infinite;
       flex-shrink: 0;
-      transition: background 0.2s ease, box-shadow 0.2s ease;
+      transition: background 0.2s ease;
       will-change: opacity;
-      transform: translateZ(0);
     }
 
     [data-ui="neonblade"] .skill-tag:hover {
@@ -1020,7 +1018,19 @@
 
     [data-ui="neonblade"] .skill-tag:hover::before {
       background: var(--neon-magenta);
-      box-shadow: 0 0 4px var(--neon-magenta), 0 0 10px var(--neon-magenta-soft);
+    }
+
+    /* Stagger pulse so 30 dots don't peak together */
+    [data-ui="neonblade"] .skill-tag:nth-child(2n)::before { animation-delay: -0.4s; }
+    [data-ui="neonblade"] .skill-tag:nth-child(3n)::before { animation-delay: -0.8s; }
+    [data-ui="neonblade"] .skill-tag:nth-child(5n)::before { animation-delay: -1.2s; }
+    [data-ui="neonblade"] .skill-tag:nth-child(7n)::before { animation-delay: -1.6s; }
+
+    /* Mobile: kill pulse + flicker — pure composite cost */
+    @media (max-width: 768px) {
+      [data-ui="neonblade"] .skill-tag::before { animation: none; opacity: 1; }
+      [data-ui="neonblade"] .hero-link,
+      [data-ui="neonblade"] .contact-link { animation: none; }
     }
 
     @keyframes nb-pulse {
