@@ -1006,6 +1006,8 @@
       animation: nb-pulse 2.4s ease infinite;
       flex-shrink: 0;
       transition: background 0.2s ease, box-shadow 0.2s ease;
+      will-change: opacity;
+      transform: translateZ(0);
     }
 
     [data-ui="neonblade"] .skill-tag:hover {
@@ -1022,8 +1024,8 @@
     }
 
     @keyframes nb-pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.35; transform: scale(0.8); }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
     }
 
     [data-ui="neonblade"] .skill-category h3 {
