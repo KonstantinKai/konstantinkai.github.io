@@ -1003,9 +1003,14 @@
       background: var(--neon-blue);
       border-radius: 50%;
       animation: nb-pulse 2.4s ease infinite;
+      animation-play-state: paused;
       flex-shrink: 0;
       transition: background 0.2s ease;
-      will-change: opacity;
+    }
+
+    /* Pulse only when skills section in viewport */
+    body.nb-skills-visible[data-ui="neonblade"] .skill-tag::before {
+      animation-play-state: running;
     }
 
     [data-ui="neonblade"] .skill-tag:hover {
@@ -1026,11 +1031,9 @@
     [data-ui="neonblade"] .skill-tag:nth-child(5n)::before { animation-delay: -1.2s; }
     [data-ui="neonblade"] .skill-tag:nth-child(7n)::before { animation-delay: -1.6s; }
 
-    /* Mobile: kill pulse + flicker — pure composite cost */
+    /* Mobile: kill pulse — main scroll-lag culprit in skills section */
     @media (max-width: 768px) {
       [data-ui="neonblade"] .skill-tag::before { animation: none; opacity: 1; }
-      [data-ui="neonblade"] .hero-link,
-      [data-ui="neonblade"] .contact-link { animation: none; }
     }
 
     @keyframes nb-pulse {
@@ -1693,6 +1696,16 @@
       el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
       observer.observe(el);
     });
+
+    // Pause skill-tag pulse when skills section off-screen (perf — kills 30 animated layers)
+    const skillsSection = document.getElementById('skills');
+    if (skillsSection) {
+      new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          document.body.classList.toggle('nb-skills-visible', e.isIntersecting);
+        });
+      }, { threshold: 0 }).observe(skillsSection);
+    }
 
     // ─── NeonBlade hex canvas (port of NeonBlade UI Hexagons) ───
     (function() {
